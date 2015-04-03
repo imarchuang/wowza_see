@@ -1,0 +1,4 @@
+JAVA_HOME=/usr/lib/jvm/java-7-oracle
+JRE_HOME=/usr/lib/jvm/java-7-oracle/jre/bin/java
+CATALINA_HOME=/opt/tomcat/
+WOWZA_HOME=/usr/local/WowzaStreamingEngine
