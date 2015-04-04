@@ -1,5 +1,6 @@
-//The following dependencies are required to put into $WOWZA_HOME/lib
+This is a wowza module extension for listening to the stream's onAppStart event to trigger notifications for subscribers
 
+//The following dependencies are required to put into $WOWZA_HOME/lib
 javax.ws.rs-api-2.0.1.jar
 jersey-client.jar
 jersey-common.jar
