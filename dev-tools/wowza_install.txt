@@ -1,0 +1,25 @@
+//download the installation package (for Ubuntu linux DEB)
+wget http://www.wowza.com/downloads/WowzaStreamingEngine-4-1-2/WowzaStreamingEngine-4.1.2.deb.bin
+
+//change the downloaded package to be executable
+chmod +x WowzaStreamingEngine-4.1.2.deb.bin
+
+//run the package with sudo
+sudo WowzaStreamingEngine-4.1.2.deb.bin
+
+/**during the process of installation, it would:**/
+* pop up to ask to agree with the license
+* enter a username and password for Wowza engine manager adminstration
+* enter the license key
+
+//config an env variable WOWZA_HOME
+	$ sudo vi /etc/profile
+WOWZA_HOME=/usr/local/WowzaStreamingEngine
+
+//That should be enough to set the environment variable. Now reload this file:
+	$ source /etc/profile
+
+
+
+
+

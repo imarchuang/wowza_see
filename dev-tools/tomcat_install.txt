@@ -1,0 +1,65 @@
+//make sure the java is installed
+	$ java -version
+//download tomcat installation package
+	$ wget http://apache.parentingamerica.com/tomcat/tomcat-7/v7.0.59/bin/apache-tomcat-7.0.59.tar.gz
+
+//install it to /opt/tomcat
+	$ cd /opt
+	$ cp ~/apache-tomcat-7.0.59.tar.gz .
+	$ tar xzvf apache-tomcat-7.0.59.tar.gz
+	$ ln -s apache-tomcat apache-tomcat-7.0.59
+	
+//the following steps is to setup the $JAVA_HOME env var... (it is weird that the env var configured in /etc/profile is not working for tomcat startup.sh script)
+	$ vi ~/.bashrc
+export JAVA_HOME=/usr/lib/jvm/java-7-oracle
+export CATALINA_HOME=/opt/apache-tomcat
+	$ . ~/.bashrc
+
+//before starting Tomcat service, change the executable permissions:
+	$ chmod +x $CATALINA_HOME/bin/startup.sh
+	$ chmod +x $CATALINA_HOME/bin/shutdown.sh
+	$ chmod +x $CATALINA_HOME/bin/catalina.sh
+//start tomcat service
+	$ $CATALINA_HOME/bin/startup.sh
+/*--------------------------------------------------------------------------------*/
+Using CATALINA_BASE:   /opt/apache-tomcat
+Using CATALINA_HOME:   /opt/apache-tomcat
+Using CATALINA_TMPDIR: /opt/tomcat/temp
+Using JRE_HOME:        /usr/lib/jvm/java-7-oracle
+Using CLASSPATH:       /opt/tomcat/bin/bootstrap.jar:/opt/tomcat/bin/tomcat-juli.jar
+Tomcat started.
+/*--------------------------------------------------------------------------------*/
+
+//Now we need to setup the user account. Finally we need to create user accounts to secure and access admin/manager pages. Edit conf/tomcat-users.xml file in your editor and paste inside <tomcat-users> </tomcat-users> tags
+	$ vi  $CATALINA_HOME/conf/tomcat-users.xml
+/*--------------------------------------------------------------------------------*/
+[...]
+<!--
+  NOTE:  The sample user and role entries below are wrapped in a comment
+  and thus are ignored when reading this file. Do not forget to remove
+  <!.. ..> that surrounds them.
+-->
+<!--
+  <role rolename="tomcat"/>
+  <role rolename="role1"/>
+  <user username="tomcat" password="tomcat" roles="tomcat"/>
+  <user username="both" password="tomcat" roles="tomcat,role1"/>
+  <user username="role1" password="tomcat" roles="role1"/>
+-->
+ <role rolename="manager-gui"/>
+ <role rolename="manager-script"/>
+ <role rolename="manager-jmx"/>
+ <role rolename="manager-status"/>
+ <role rolename="admin-gui"/>
+ <role rolename="admin-script"/>
+ <user username="admin" password="admin" roles="manager-gui,manager-script,manager-jmx,manager-status,admin-gui,admin-script"/>
+</tomcat-users>
+/*--------------------------------------------------------------------------------*/
+
+//verify the service
+	$ netstat -an | grep 8080
+/*--------------------------------------------------------------------------------*/	
+tcp6       0      0 :::8080                 :::*                    LISTEN 
+/*--------------------------------------------------------------------------------*/
+
+
