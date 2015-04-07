@@ -8,3 +8,382 @@ Right-click the project >> Run As >> Maven build.. >> {"Goals":"clean install"} 
 
 //Deploy Application on Apache Tomcat Server.
 Right click on Server >> Add and Remove >> Select HelloWorldREST >> Click Finish.
+
+/*************************************************************************************************/
+* Below describes a more generic approach in terms of creating a web project via Maven in Eclipse*
+/*************************************************************************************************/
+
+1. Technologies used :
+	Maven 3.1.1
+	Eclipse 4.2
+	JDK 7
+	Spring 4.1.1.RELEASED
+	Tomcat 7
+	Logback 1.0.13
+	
+2. Create Web Project from Maven Template. Type this command :
+$ mvn archetype:generate -DgroupId={project-packaging} 
+	-DartifactId={project-name} 
+	-DarchetypeArtifactId=maven-archetype-webapp 
+	-DinteractiveMode=false
+/*******************EXAMPLE***********************************/
+$ mvn archetype:generate -DgroupId=com.imarchuang 
+	-DartifactId=CounterWebApp 
+	-DarchetypeArtifactId=maven-archetype-webapp 
+	-DinteractiveMode=false
+/*************************************************************/
+Output in the terminal:
+/*----------------------------------------------------------------------------------------------------------*/
+[INFO] Scanning for projects...
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Maven Stub Project (No POM) 1
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] Generating project in Batch mode
+[INFO] ----------------------------------------------------------------------------
+[INFO] Using following parameters for creating project from Old (1.x) Archetype: maven-archetype-webapp:1.0
+[INFO] ----------------------------------------------------------------------------
+[INFO] Parameter: groupId, Value: com.imarchuang
+[INFO] Parameter: packageName, Value: com.imarchuang
+[INFO] Parameter: package, Value: com.imarchuang
+[INFO] Parameter: artifactId, Value: CounterWebApp
+[INFO] Parameter: basedir, Value: /Users/imarchuang/Documents/workspace
+[INFO] Parameter: version, Value: 1.0-SNAPSHOT
+[INFO] project created from Old (1.x) Archetype in dir: /Users/imarchuang/Documents/workspace/CounterWebApp
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 3.147s
+[INFO] Finished at: Thu Dec 20 20:35:19 MYT 2014
+[INFO] Final Memory: 12M/128M
+[INFO] ------------------------------------------------------------------------
+/*----------------------------------------------------------------------------------------------------------*/
+
+3. Project Directory Layout (Maven generated some folders, a deployment descriptor web.xml, pom.xml and index.jsp)
+.
+|____CounterWebApp
+| |____pom.xml
+| |____src
+| | |____main
+| | | |____resources
+| | | |____webapp
+| | | | |____index.jsp
+| | | | |____WEB-INF
+| | | | | |____web.xml
+
+4. Eclipse IDE Support
+	4.1:In terminal, navigate to “CounterWebApp” folder, type this command :
+	$ mvn eclipse:eclipse -Dwtpversion=2.0
+	Note::
+		This option -Dwtpversion=2.0 tells Maven to convert the project into an Eclipse web project (WAR), not the default Java project (JAR). For convenience, later we will show you how to configure this WTP option in pom.xml.
+	4.2 Imports it into Eclipse IDE – File -> Import… -> General -> Existing Projects into workspace.
+
+5. Update POM
+	In Maven, the web project settings are configure via this single pom.xml file.
+
+	1. Add project dependencies – Spring, logback and junit
+	2. Add plugins to configure this project 
+/*******************EXAMPLE pom.xml***********************************/	
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+	http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.mkyong</groupId>
+	<artifactId>CounterWebApp</artifactId>
+	<packaging>war</packaging>
+	<version>1.0-SNAPSHOT</version>
+	<name>CounterWebApp Maven Webapp</name>
+	<url>http://maven.apache.org</url>
+	<properties>
+		<jdk.version>1.7</jdk.version>
+		<spring.version>4.1.1.RELEASE</spring.version>
+		<jstl.version>1.2</jstl.version>
+		<junit.version>4.11</junit.version>
+		<logback.version>1.0.13</logback.version>
+		<jcl-over-slf4j.version>1.7.5</jcl-over-slf4j.version>
+	</properties>
+ 
+	<dependencies>
+ 
+		<!-- Unit Test -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+		</dependency>
+ 
+		<!-- Spring Core -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${spring.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+ 
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${jcl-over-slf4j.version}</version>
+		</dependency>
+ 
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${logback.version}</version>
+		</dependency>
+ 
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+ 
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+ 
+		<!-- jstl -->
+		<dependency>
+			<groupId>jstl</groupId>
+			<artifactId>jstl</artifactId>
+			<version>${jstl.version}</version>
+		</dependency>
+ 
+	</dependencies>
+ 
+	<build>
+		<finalName>CounterWebApp</finalName>
+ 
+		<plugins>
+		    <!-- Eclipse project -->
+		  <plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-eclipse-plugin</artifactId>
+			<version>2.9</version>
+			<configuration>
+			        <!-- Always download and attach dependencies source code -->
+				<downloadSources>true</downloadSources>
+				<downloadJavadocs>false</downloadJavadocs>
+				<!-- Avoid type mvn eclipse:eclipse -Dwtpversion=2.0 -->
+				<wtpversion>2.0</wtpversion>
+			</configuration>
+		  </plugin>
+ 
+		  <!-- Set JDK Compiler Level -->
+		  <plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-compiler-plugin</artifactId>
+			<version>2.3.2</version>
+			<configuration>
+				<source>${jdk.version}</source>
+				<target>${jdk.version}</target>
+			</configuration>
+		  </plugin>
+ 
+		  <!-- For Maven Tomcat Plugin -->
+		  <plugin>
+			<groupId>org.apache.tomcat.maven</groupId>
+			<artifactId>tomcat7-maven-plugin</artifactId>
+			<version>2.2</version>
+			<configuration>
+				<path>/CounterWebApp</path>
+			</configuration>
+		  </plugin>
+ 
+		</plugins>
+ 
+	</build>
+</project>
+/******************************************************************************/	
+Note::
+	For convenience, declares maven-eclipse-plugin and configure wtpversion to avoid typing the parameter -Dwtpversion=2.0. Now, each time you use mvn eclipse:eclipse, Maven will convert this project into Eclipse web project.
+		#Before 
+		mvn eclipse:eclipse --> Eclipse Java project (JAR)
+		mvn eclipse:eclipse -Dwtpversion=2.0 --> Eclipse Java web project (WAR)
+	 
+		#Now
+		mvn eclipse:eclipse --> Eclipse Java web project (WAR)
+		
+6. Update Source Code. In this step, we will create a few files and folders for Spring MVC and logback logging framework. 
+The final project structure will look like this :
+.
+|____pom.xml
+|____src
+| |____main
+| | |____java
+| | | |____com
+| | | | |____mkyong
+| | | | | |____controller
+| | | | | | |____BaseController.java
+| | |____resources
+| | | |____logback.xml
+| | |____webapp
+| | | |____WEB-INF
+| | | | |____mvc-dispatcher-servlet.xml
+| | | | |____pages
+| | | | | |____index.jsp
+| | | | |____web.xml
+
+	6.1 Create a Spring MVC controller class.(/src/main/java/com/imarchuang/controller/BaseController.java)
+	/***********************************************SOUCE CODE***************************************************/
+	package com.mkyong.controller;
+ 
+	import org.slf4j.LoggerFactory;
+	import org.springframework.stereotype.Controller;
+	import org.springframework.ui.ModelMap;
+	import org.springframework.web.bind.annotation.PathVariable;
+	import org.springframework.web.bind.annotation.RequestMapping;
+	import org.springframework.web.bind.annotation.RequestMethod;
+	 
+	@Controller
+	public class BaseController {
+	 
+		private static int counter = 0;
+		private static final String VIEW_INDEX = "index";
+		private final static org.slf4j.Logger logger = LoggerFactory.getLogger(BaseController.class);
+	 
+		@RequestMapping(value = "/", method = RequestMethod.GET)
+		public String welcome(ModelMap model) {
+	 
+			model.addAttribute("message", "Welcome");
+			model.addAttribute("counter", ++counter);
+			logger.debug("[welcome] counter : {}", counter);
+	 
+			// Spring uses InternalResourceViewResolver and return back index.jsp
+			return VIEW_INDEX;
+	 
+		}
+	 
+		@RequestMapping(value = "/{name}", method = RequestMethod.GET)
+		public String welcomeName(@PathVariable String name, ModelMap model) {
+	 
+			model.addAttribute("message", "Welcome " + name);
+			model.addAttribute("counter", ++counter);
+			logger.debug("[welcomeName] counter : {}", counter);
+			return VIEW_INDEX;
+	 
+		}
+	 
+	}
+	/***********************************************END SOUCE CODE***************************************************/
+	
+	6.2 Create a Spring configuration file. (/src/main/webapp/WEB-INF/mvc-dispatcher-servlet.xml)
+	<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:context="http://www.springframework.org/schema/context"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="
+			http://www.springframework.org/schema/beans     
+			http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/context 
+			http://www.springframework.org/schema/context/spring-context.xsd">
+	 
+		<context:component-scan base-package="com.mkyong.controller" />
+	 
+		<bean
+			class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+			<property name="prefix">
+				<value>/WEB-INF/pages/</value>
+			</property>
+			<property name="suffix">
+				<value>.jsp</value>
+			</property>
+		</bean>
+	</beans>
+	
+	6.3 Update existing web.xml to support Servlet 2.5 (the default Servlet 2.3 is too old), and also integrates Spring framework via Spring’s listener ContextLoaderListener. (/src/main/webapp/WEB-INF/web.xml)
+	<web-app xmlns="http://java.sun.com/xml/ns/javaee" 
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+	      http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+		version="2.5">
+ 
+		<display-name>Counter Web Application</display-name>
+	 
+		<servlet>
+			<servlet-name>mvc-dispatcher</servlet-name>
+			<servlet-class>
+							org.springframework.web.servlet.DispatcherServlet
+					</servlet-class>
+			<load-on-startup>1</load-on-startup>
+		</servlet>
+	 
+		<servlet-mapping>
+			<servlet-name>mvc-dispatcher</servlet-name>
+			<url-pattern>/</url-pattern>
+		</servlet-mapping>
+	 
+		<context-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>/WEB-INF/mvc-dispatcher-servlet.xml</param-value>
+		</context-param>
+	 
+		<listener>
+			<listener-class>
+					   org.springframework.web.context.ContextLoaderListener
+					</listener-class>
+		</listener>
+	</web-app>
+	
+	6.4 Moves index.jsp to folder WEB-INF/pages, in order to protect direct access. And updates the content : (/src/main/webapp/WEB-INF/pages/index.jsp)
+	<html>
+		<body>
+		<h1>Maven + Spring MVC Web Project Example</h1>
+		 
+		<h3>Message : ${message}</h3>
+		<h3>Counter : ${counter}</h3>	
+		</body>
+	</html>
+	
+	6.5 Create a logback.xml file and puts in resources folder. (/src/main/resources/logback.xml)
+	<?xml version="1.0" encoding="UTF-8"?>
+	<configuration>
+	 
+		<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+			<layout class="ch.qos.logback.classic.PatternLayout">
+	 
+			<Pattern>
+				%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
+			</Pattern>
+	 
+			</layout>
+		</appender>
+	 
+		<logger name="com.mkyong.controller" level="debug"
+			additivity="false">
+			<appender-ref ref="STDOUT" />
+		</logger>
+	 
+		<root level="error">
+			<appender-ref ref="STDOUT" />
+		</root>
+	 
+	</configuration>
+	
+7. Eclipse + Tomcat
+
+	7.1 To compile, test and package the project into a WAR file, type this : 
+	$ mvn package
+		A new WAR file will be generated at project/target/CounterWebApp.war, just copy and deploy to your Tomcat.
+	7.2 If you want to debug this project via Eclipse server plugin (Tomcat or other containers), type this again :
+	$ mvn eclipse:eclipse
+		If everything is fine, the project dependencies will be attached to the project web deployment assembly. (Right clicks on the project -> Properties -> Deployment Assembly)
+	7.3 Since the Maven Tomcat plugin is declared in the pom.xml, Type this command :
+	$ mvn tomcat:run
+		It will start Tomcat and deploy your project default to port 8080.
+		
+8. Demo
+Deploy the WAR file on Tomcat :
+
+8.1 http://localhost:8080/CounterWebApp/
+8.2 http://localhost:8080/CounterWebApp/imarchuang
+8.3 http://localhost:8080/CounterWebApp/android
+	
