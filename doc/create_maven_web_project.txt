@@ -1,0 +1,10 @@
+//Create a maven web application project in eclipse
+Eclipse >> New >> {"Maven":"Maven Project"} >> "Use default Workspace location" 
+	>> {"Catalog":"All Catalogs","Filter":"maven-archetype-webapp"} 
+		>> {"Group Id":"com.imarchuang","Artifact Id":"HelloWorldREST"}
+		
+//build the project
+Right-click the project >> Run As >> Maven build.. >> {"Goals":"clean install"} >> Run
+
+//Deploy Application on Apache Tomcat Server.
+Right click on Server >> Add and Remove >> Select HelloWorldREST >> Click Finish.
